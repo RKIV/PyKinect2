@@ -52,6 +52,8 @@ class BodyGameRuntime(object):
         # here we will store skeleton data
         self._bodies = None
 
+        self._frame_index = 0
+
 
     def draw_body_bone(self, joints, jointPoints, color, joint0, joint1):
         joint0State = joints[joint0].TrackingState;
@@ -98,9 +100,18 @@ class BodyGameRuntime(object):
         x = joint_depth_points[PyKinectV2.JointType_HandRight].x
         y = joint_depth_points[PyKinectV2.JointType_HandRight].y
         index = y*512 + x
-        z = depth[int(index)]
+        if index < 217088:
+            z = depth[int(index)]
+        else:
+            z = 0
 
-        print(x, y, z)
+        if self._frame_index >= 5:
+            print(x, y, z)
+            self._frame_index = 0
+        else:
+            self._frame_index += 1
+
+
 
         # Left Arm
         self.draw_body_bone(joints, jointPoints, color, PyKinectV2.JointType_ShoulderLeft, PyKinectV2.JointType_ElbowLeft);
@@ -130,6 +141,7 @@ class BodyGameRuntime(object):
     def run(self):
         # -------- Main Program Loop -----------
         depth = None
+
         while not self._done:
             # --- Main event loop
             for event in pygame.event.get(): # User did something
@@ -152,6 +164,7 @@ class BodyGameRuntime(object):
             if self._kinect.has_new_depth_frame():
                 frame = self._kinect.get_last_depth_frame()
                 depth = frame
+                print(depth[120388])
                 frame = None
 
             # --- Cool! We have a body frame, so can get skeletons

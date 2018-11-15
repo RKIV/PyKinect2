@@ -59,11 +59,12 @@ class InfraRedRuntime(object):
         if frame is None:  # some usb hub do not provide the depth image. it works with Kinect studio though
             return
         target_surface.lock()
-        print(frame[108800])
-        f8=np.uint8(frame.clip(1,4000)/16.)
+        # print(frame[106544])
+        f8=np.uint8(frame.clip(0,1)/16.)
+        print(f8)
 
         frame8bit=np.dstack((f8,f8,f8))
-        frame8bit[0][120388][0] = 0
+        frame8bit[120388][120388][120388] = 250
         address = self._kinect.surface_as_array(target_surface.get_buffer())
 
         ctypes.memmove(address, frame8bit.ctypes.data, frame8bit.size)
